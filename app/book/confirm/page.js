@@ -30,6 +30,29 @@ export default function Confirm() {
     return `${h12}:${minute} ${ampm}`
   }
 
+async function handlePayNow() {
+  if (!name || !email) return alert('Please fill in your name and email')
+  setLoading(true)
+
+  const res = await fetch('/api/checkout', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      serviceName: service.name,
+      servicePrice: service.price,
+      slotId: slot.id,
+      serviceId: service.id,
+      barberId: barber.id,
+      customerName: name,
+      customerEmail: email,
+      notes: notes || '',
+    })
+  })
+
+  const { url } = await res.json()
+  window.location.href = url
+}
+  
   async function handleConfirm() {
     if (!name || !email) return alert('Please fill in your name and email')
     setLoading(true)
@@ -166,9 +189,27 @@ export default function Confirm() {
 </div>
         </div>
 
-        <button onClick={handleConfirm} disabled={loading} style={{ width: '100%', background: '#0a0a0a', color: '#fff', padding: '0.875rem', borderRadius: '999px', fontSize: '0.9rem', fontWeight: 500, border: 'none', cursor: 'pointer', opacity: loading ? 0.6 : 1 }}>
-          {loading ? 'Confirming...' : 'Confirm booking'}
-        </button>
+       <button
+  onClick={handlePayNow}
+  disabled={loading}
+  style={{ width: '100%', background: '#635BFF', color: '#fff', padding: '0.875rem', borderRadius: '999px', fontSize: '0.9rem', fontWeight: 500, border: 'none', cursor: 'pointer', opacity: loading ? 0.6 : 1, marginBottom: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem' }}
+>
+  {loading ? 'Redirecting to Stripe...' : (
+    <>
+      {/* Place your stripe-logo-white.png in your public/images/ folder */}
+      <img src="/images/stripe-logo-white.png" alt="Stripe" style={{ height: '18px', objectFit: 'contain' }} />
+      <span>Pay now with Stripe — ${service?.price}</span>
+    </>
+  )}
+</button>
+
+<button
+  onClick={handleConfirm}
+  disabled={loading}
+  style={{ width: '100%', background: '#fff', color: '#0a0a0a', padding: '0.875rem', borderRadius: '999px', fontSize: '0.9rem', fontWeight: 500, border: '1px solid #e8e8e8', cursor: 'pointer', opacity: loading ? 0.6 : 1 }}
+>
+  {loading ? 'Booking...' : 'Reserve now, pay at appointment'}
+</button>
 
         <button onClick={() => router.back()} style={{ marginTop: '1.5rem', fontSize: '0.85rem', color: '#aaa', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>← Back</button>
       </div>
