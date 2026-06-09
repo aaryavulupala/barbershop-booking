@@ -52,34 +52,22 @@ export default function Home() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
 
           {/* IMAGE SLOT 1 — replace this div with your photo */}
-          <div style={{ aspectRatio: '4/5', background: '#f5f5f5', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ fontSize: '0.75rem', color: '#bbb' }}>Photo 1</span>
-          </div>
+          <img src="/images/Haircut1.png" alt="Fade haircut" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
 
           {/* IMAGE SLOT 2 — replace this div with your photo */}
-          <div style={{ aspectRatio: '4/5', background: '#f5f5f5', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ fontSize: '0.75rem', color: '#bbb' }}>Photo 2</span>
-          </div>
+          <img src="/images/Haircut2.png" alt="Buzz cut" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
 
           {/* IMAGE SLOT 3 — replace this div with your photo */}
-          <div style={{ aspectRatio: '4/5', background: '#f5f5f5', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ fontSize: '0.75rem', color: '#bbb' }}>Photo 3</span>
-          </div>
+          <img src="/images/Haircut3.png" alt="Undercut" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
 
           {/* IMAGE SLOT 4 — replace this div with your photo */}
-          <div style={{ aspectRatio: '4/5', background: '#f5f5f5', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ fontSize: '0.75rem', color: '#bbb' }}>Photo 4</span>
-          </div>
+          <img src="/images/Haircut4.png" alt="Crew cut" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
 
           {/* IMAGE SLOT 5 — replace this div with your photo */}
-          <div style={{ aspectRatio: '4/5', background: '#f5f5f5', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ fontSize: '0.75rem', color: '#bbb' }}>Photo 5</span>
-          </div>
+          <img src="/images/Haircut5.png" alt="Pompadour" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
 
           {/* IMAGE SLOT 6 — replace this div with your photo */}
-          <div style={{ aspectRatio: '4/5', background: '#f5f5f5', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ fontSize: '0.75rem', color: '#bbb' }}>Photo 6</span>
-          </div>
+          <img src="/images/Haircut6.png" alt="Buzz cut" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
 
         </div>
       </section>
@@ -91,9 +79,7 @@ export default function Home() {
 
           {/* PROFILE PHOTO — replace this div with your photo */}
           {/* Example: <img src="/images/me.jpg" alt="Your name" style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} /> */}
-          <div style={{ width: '100px', height: '100px', borderRadius: '50%', background: '#f5f5f5', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ fontSize: '0.7rem', color: '#bbb' }}>Your photo</span>
-          </div>
+          <img src="/images/ProfessionalHeadShot.png" alt="Aarya Vulupala" style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
 
           <div>
             {/* UPDATE: Replace with your name and bio */}
@@ -158,8 +144,14 @@ export default function Home() {
 
       {/* ── FOOTER ── */}
       <footer style={{ borderTop: '1px solid #f0f0f0', padding: '2rem', textAlign: 'center' }}>
-        <p style={{ fontSize: '0.8rem', color: '#bbb' }}>© 2023 The Chop Shop Barbers · Princeton & New Brunwick, New Jersey</p>
-      </footer>
+  <p style={{ fontSize: '0.8rem', color: '#bbb' }}>&#169; 2024 The Chop Shop Barbers · New York City</p>
+  <a
+    href="/admin/login"
+    style={{ fontSize: '0.75rem', color: '#ddd', textDecoration: 'none', marginTop: '0.5rem', display: 'inline-block' }}
+  >
+    Barber login
+  </a>
+</footer>
 
     </main>
   )
