@@ -91,6 +91,63 @@ export default function Home() {
         </div>
       </section>
 
+
+      {/* ── TICKER ── */}
+<div style={{ borderTop: '1px solid #f0f0f0', borderBottom: '1px solid #f0f0f0', padding: '1rem 0', overflow: 'hidden', position: 'relative' }}>
+  {/* Fade edges */}
+  <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '120px', background: 'linear-gradient(to right, #fff, transparent)', zIndex: 2 }} />
+  <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '120px', background: 'linear-gradient(to left, #fff, transparent)', zIndex: 2 }} />
+
+  <style>{`
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .ticker-track {
+      display: flex;
+      width: max-content;
+      animation: ticker 25s linear infinite;
+    }
+    .ticker-track:hover {
+      animation-play-state: paused;
+    }
+  `}</style>
+
+  <div className="ticker-track">
+    {[
+  { name: 'Next.js', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg' },
+  { name: 'React', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg' },
+  { name: 'Node.js', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg' },
+  { name: 'Supabase', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/supabase/supabase-original.svg' },
+  { name: 'PostgreSQL', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg' },
+  { name: 'Stripe', logo: 'https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/stripe.svg' },
+  { name: 'Resend', logo: 'https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/resend.svg' },
+  { name: 'Twilio', logo: 'https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/twilio.svg' },
+  { name: 'Vercel', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vercel/vercel-original.svg' },
+  { name: 'GitHub', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg' },
+  // Duplicate for seamless loop
+  { name: 'Next.js', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg' },
+  { name: 'React', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg' },
+  { name: 'Node.js', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg' },
+  { name: 'Supabase', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/supabase/supabase-original.svg' },
+  { name: 'PostgreSQL', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg' },
+  { name: 'Stripe', logo: 'https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/stripe.svg' },
+  { name: 'Resend', logo: 'https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/resend.svg' },
+  { name: 'Twilio', logo: 'https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/twilio.svg' },
+  { name: 'Vercel', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vercel/vercel-original.svg' },
+  { name: 'GitHub', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg' },
+].map((tool, i) => (
+  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0 2.5rem', whiteSpace: 'nowrap' }}>
+    <img src={tool.logo} alt={tool.name} style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
+    <span style={{ fontSize: '0.8rem', fontWeight: 500, color: '#888', letterSpacing: '0.05em' }}>{tool.name}</span>
+    <span style={{ marginLeft: '2.5rem', color: '#ddd', fontSize: '0.6rem' }}>◆</span>
+  </div>
+))}
+  </div>
+</div>
+
+
+
       {/* ── SERVICES ── */}
       <section style={{ maxWidth: '680px', margin: '0 auto', padding: '4rem 2rem', borderTop: '1px solid #f0f0f0' }}>
         <h2 style={{ fontSize: '1.1rem', fontWeight: 500, marginBottom: '1.5rem' }}>Services</h2>
