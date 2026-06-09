@@ -144,7 +144,7 @@ export default function Home() {
 
       {/* ── FOOTER ── */}
       <footer style={{ borderTop: '1px solid #f0f0f0', padding: '2rem', textAlign: 'center' }}>
-  <p style={{ fontSize: '0.8rem', color: '#bbb' }}>&#169; 2024 The Chop Shop Barbers · New York City</p>
+  <p style={{ fontSize: '0.8rem', color: '#bbb' }}>&#169; 2023 The Chop Shop Barbers · Princeton & New Brunswick, New Jlgoersey</p>
   <a
     href="/admin/login"
     style={{ fontSize: '0.75rem', color: '#ddd', textDecoration: 'none', marginTop: '0.5rem', display: 'inline-block' }}
