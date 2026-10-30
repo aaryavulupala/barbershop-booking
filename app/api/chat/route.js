@@ -1,6 +1,6 @@
 import { buildSystemPrompt } from '@/lib/shopContext'
 
-const MODEL = 'llama-3.1-8b-instant'
+const MODEL = process.env.GEMINI_MODEL || 'gemini-3.6-flash'
 const MAX_MESSAGE_CHARS = 500
 const MAX_HISTORY = 8
 
@@ -25,7 +25,7 @@ function isRateLimited(ip) {
 const BOOKING_WORDS = ['book', 'appointment', 'schedule', 'reserve', 'slot', 'booking']
 
 export async function POST(request) {
-  if (!process.env.GROQ_API_KEY) {
+  if (!process.env.GEMINI_API_KEY) {
     return Response.json({ error: 'Chat is not configured.' }, { status: 500 })
   }
 
@@ -56,38 +56,51 @@ export async function POST(request) {
     return Response.json({ error: 'That message is a bit long — try shortening it.' }, { status: 400 })
   }
 
+  // Gemini wants user/model turns, starting with a user turn. Drop the canned
+  // greeting and any client-side error bubbles.
   const history = messages
     .slice(-MAX_HISTORY)
-    .filter((m) => typeof m.text === 'string' && m.text.trim())
+    .filter((m) => (m.role === 'user' || m.role === 'bot') && typeof m.text === 'string' && m.text.trim())
     .map((m) => ({
-      role: m.role === 'bot' ? 'assistant' : 'user',
-      content: m.text.slice(0, MAX_MESSAGE_CHARS),
+      role: m.role === 'bot' ? 'model' : 'user',
+      parts: [{ text: m.text.slice(0, MAX_MESSAGE_CHARS) }],
     }))
+  while (history.length && history[0].role !== 'user') history.shift()
 
   try {
     const systemPrompt = await buildSystemPrompt()
 
-    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        messages: [{ role: 'system', content: systemPrompt }, ...history],
-        max_tokens: 300,
-        temperature: 0.7,
-      }),
-    })
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': process.env.GEMINI_API_KEY,
+        },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: systemPrompt }] },
+          contents: history,
+          generationConfig: {
+            maxOutputTokens: 1024,
+            temperature: 0.7,
+            thinkingConfig: { thinkingLevel: 'low' },
+          },
+        }),
+      }
+    )
 
     if (!res.ok) {
-      console.error('Groq error', res.status, await res.text())
+      console.error('Gemini error', res.status, await res.text())
       return Response.json({ error: 'Something went wrong.' }, { status: 502 })
     }
 
     const data = await res.json()
-    const reply = data.choices?.[0]?.message?.content?.trim()
+    const reply = data.candidates?.[0]?.content?.parts
+      ?.filter((p) => !p.thought && typeof p.text === 'string')
+      .map((p) => p.text)
+      .join('')
+      .trim()
 
     if (!reply) {
       return Response.json({ error: 'Something went wrong.' }, { status: 502 })

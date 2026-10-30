@@ -33,7 +33,7 @@ export default function PickBarber() {
       <button onClick={() => router.push('/')} style={{ position: 'fixed', top: '1.25rem', left: '1.25rem', background: '#0a0a0a', color: '#fff', border: 'none', borderRadius: '999px', padding: '0.5rem 1rem', fontSize: '0.8rem', fontWeight: 500, cursor: 'pointer', zIndex: 999 }}>← Home</button>
 
       <nav style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '1.25rem 2rem', borderBottom: '1px solid #f0f0f0' }}>
-        <span style={{ fontWeight: 600, fontSize: '1rem', letterSpacing: '-0.01em' }}>The Chop Shop</span>
+        <span style={{ fontWeight: 600, fontSize: '1rem', letterSpacing: '-0.01em' }}>Aarya Cuts</span>
       </nav>
 
       <div style={{ maxWidth: '580px', margin: '0 auto', padding: '3rem 2rem' }}>

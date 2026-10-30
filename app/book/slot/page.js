@@ -1,11 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 
 export default function PickSlot() {
-  const [slots, setSlots] = useState([])
+  const [days_, setDays] = useState({})
+  const [loadError, setLoadError] = useState(null)
   const [loading, setLoading] = useState(true)
   const [barber, setBarber] = useState(null)
   const [selectedDate, setSelectedDate] = useState(null)
@@ -21,21 +21,27 @@ export default function PickSlot() {
 
   useEffect(() => {
     const savedBarber = JSON.parse(localStorage.getItem('selectedBarber'))
-    if (!savedBarber) { router.push('/book'); return }
+    const savedService = JSON.parse(localStorage.getItem('selectedService'))
+    if (!savedBarber || !savedService) { router.push('/book'); return }
     setBarber(savedBarber)
-    async function fetchSlots() {
-      const { data, error } = await supabase.from('time_slots').select('*').eq('barber_id', savedBarber.id).order('slot_date', { ascending: true })
-      if (error) console.error(error)
-      else setSlots(data)
+    async function fetchAvailability() {
+      try {
+        const res = await fetch(`/api/availability?serviceId=${savedService.id}`)
+        const data = await res.json()
+        if (!res.ok) setLoadError(data.error || 'Could not load availability.')
+        else setDays(data.days)
+      } catch {
+        setLoadError('Could not load availability.')
+      }
       setLoading(false)
     }
-    fetchSlots()
+    fetchAvailability()
   }, [])
 
-  const availableDates = [...new Set(slots.map((s) => s.slot_date))]
+  const availableDates = Object.keys(days_).filter((d) => days_[d].length > 0)
 
-  function getSlotForTime(time) {
-    return slots.find((s) => s.slot_date === selectedDate && s.start_time.slice(0, 5) === time)
+  function isAvailable(time) {
+    return Boolean(days_[selectedDate]?.includes(time))
   }
 
   function formatTime(time) {
@@ -61,7 +67,8 @@ export default function PickSlot() {
   for (let i = 0; i < firstDay; i++) days.push(null)
   for (let i = 1; i <= daysInMonth; i++) days.push(i)
 
-  function handleSelectSlot(slot) {
+  function handleSelectSlot(time) {
+    const slot = { slot_date: selectedDate, start_time: time }
     setSelectedSlot(slot)
     localStorage.setItem('selectedSlot', JSON.stringify(slot))
   }
@@ -75,7 +82,7 @@ export default function PickSlot() {
       <button onClick={() => router.push('/')} style={{ position: 'fixed', top: '1.25rem', left: '1.25rem', background: '#0a0a0a', color: '#fff', border: 'none', borderRadius: '999px', padding: '0.5rem 1rem', fontSize: '0.8rem', fontWeight: 500, cursor: 'pointer', zIndex: 999 }}>← Home</button>
 
       <nav style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '1.25rem 2rem', borderBottom: '1px solid #f0f0f0' }}>
-        <span style={{ fontWeight: 600, fontSize: '1rem', letterSpacing: '-0.01em' }}>The Chop Shop</span>
+        <span style={{ fontWeight: 600, fontSize: '1rem', letterSpacing: '-0.01em' }}>Aarya Cuts</span>
       </nav>
 
       <div style={{ maxWidth: '580px', margin: '0 auto', padding: '3rem 2rem' }}>
@@ -89,7 +96,8 @@ export default function PickSlot() {
 
         <p style={{ fontSize: '0.75rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#aaa', marginBottom: '0.75rem' }}>Step 3 of 4</p>
         <h1 style={{ fontSize: '1.75rem', fontWeight: 600, letterSpacing: '-0.02em', marginBottom: '0.5rem' }}>Choose a date & time</h1>
-        <p style={{ fontSize: '0.9rem', color: '#aaa', fontWeight: 300, marginBottom: '2rem' }}>Pick an available date then select a time.</p>
+        <p style={{ fontSize: '0.9rem', color: '#aaa', fontWeight: 300, marginBottom: '2rem' }}>Pick an available date then select a time. Times are Eastern.</p>
+        {loadError && <p style={{ fontSize: '0.85rem', color: '#e53e3e', marginBottom: '1.5rem' }}>{loadError}</p>}
 
         {/* Calendar */}
         <div style={{ border: '1px solid #f0f0f0', borderRadius: '12px', padding: '1.5rem', marginBottom: '1.5rem' }}>
@@ -132,24 +140,22 @@ export default function PickSlot() {
             </p>
             <div style={{ border: '1px solid #f0f0f0', borderRadius: '12px', overflow: 'hidden', maxHeight: '320px', overflowY: 'auto', marginBottom: '1.5rem' }}>
               {allTimes.map((time) => {
-                const slot = getSlotForTime(time)
-                const isBooked = slot?.is_booked
-                const isAvailable = slot && !isBooked
-                const isSelected = selectedSlot?.id === slot?.id
+                const available = isAvailable(time)
+                const isSelected = selectedSlot?.start_time === time
                 return (
                   <div
                     key={time}
-                    onClick={() => isAvailable && handleSelectSlot(slot)}
-                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.9rem 1.25rem', borderBottom: '1px solid #f0f0f0', background: isSelected ? '#0a0a0a' : '#fff', cursor: isAvailable ? 'pointer' : 'default', transition: 'background 0.1s' }}
-                    onMouseEnter={e => { if (isAvailable && !isSelected) e.currentTarget.style.background = '#fafafa' }}
-                    onMouseLeave={e => { if (isAvailable && !isSelected) e.currentTarget.style.background = '#fff' }}
+                    onClick={() => available && handleSelectSlot(time)}
+                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.9rem 1.25rem', borderBottom: '1px solid #f0f0f0', background: isSelected ? '#0a0a0a' : '#fff', cursor: available ? 'pointer' : 'default', transition: 'background 0.1s' }}
+                    onMouseEnter={e => { if (available && !isSelected) e.currentTarget.style.background = '#fafafa' }}
+                    onMouseLeave={e => { if (available && !isSelected) e.currentTarget.style.background = '#fff' }}
                   >
-                    <span style={{ fontSize: '0.9rem', fontWeight: 500, color: isSelected ? '#fff' : !slot ? '#ddd' : '#0a0a0a' }}>{formatTime(time)}</span>
+                    <span style={{ fontSize: '0.9rem', fontWeight: 500, color: isSelected ? '#fff' : !available ? '#ddd' : '#0a0a0a' }}>{formatTime(time)}</span>
                     <span style={{ fontSize: '0.75rem', fontWeight: 500, padding: '0.2rem 0.65rem', borderRadius: '999px',
-                      background: isSelected ? 'rgba(255,255,255,0.15)' : isAvailable ? '#f0fdf4' : isBooked ? '#fef2f2' : '#f5f5f5',
-                      color: isSelected ? '#fff' : isAvailable ? '#16a34a' : isBooked ? '#e53e3e' : '#ccc'
+                      background: isSelected ? 'rgba(255,255,255,0.15)' : available ? '#f0fdf4' : '#f5f5f5',
+                      color: isSelected ? '#fff' : available ? '#16a34a' : '#ccc'
                     }}>
-                      {isSelected ? 'Selected' : isAvailable ? 'Available' : isBooked ? 'Booked' : 'Unavailable'}
+                      {isSelected ? 'Selected' : available ? 'Available' : 'Unavailable'}
                     </span>
                   </div>
                 )

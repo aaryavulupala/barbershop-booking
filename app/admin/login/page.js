@@ -38,7 +38,7 @@ export default function AdminLogin() {
 
       <div style={{ width: '100%', maxWidth: '380px', padding: '2rem' }}>
         <h1 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.5rem', letterSpacing: '-0.01em' }}>Barber login</h1>
-        <p style={{ fontSize: '0.875rem', color: '#aaa', marginBottom: '2rem' }}>The Chop Shop admin access</p>
+        <p style={{ fontSize: '0.875rem', color: '#aaa', marginBottom: '2rem' }}>Aarya Cuts admin access</p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>

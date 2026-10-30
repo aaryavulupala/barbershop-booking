@@ -13,12 +13,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "The Chop Shop Booking Site",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
+  title: "Aarya Cuts | Book a Cut",
   description: "Book your next haircut appointment with ease",
   openGraph: {
-    title: 'The Chop Shop',
+    title: 'Aarya Cuts',
     description: 'Premium Men’s Grooming',
-    images: ['/images/logo.png'],
+    images: ['/images/aarya-cuts-logo.jpg'],
   },
 };
 

@@ -11,11 +11,12 @@ export default function Home() {
 
       {/* ── NAV ── */}
       <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem 2rem', borderBottom: '1px solid #f0f0f0' }}>
-        <span style={{ fontWeight: 600, fontSize: '1rem', letterSpacing: '-0.01em' }}>The Chop Shop</span>
+        <span style={{ fontWeight: 600, fontSize: '1rem', letterSpacing: '-0.01em' }}>Aarya Cuts</span>
         <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
           <a href="#work" style={{ fontSize: '0.875rem', color: '#555', textDecoration: 'none' }}>Work</a>
           <a href="#about" style={{ fontSize: '0.875rem', color: '#555', textDecoration: 'none' }}>About</a>
           <a href="#social" style={{ fontSize: '0.875rem', color: '#555', textDecoration: 'none' }}>Social</a>
+          <a href="/style-quiz" style={{ fontSize: '0.875rem', color: '#555', textDecoration: 'none' }}>Style quiz</a>
           <button
             onClick={() => router.push('/book')}
             style={{ background: '#0a0a0a', color: '#fff', padding: '0.5rem 1.25rem', borderRadius: '999px', fontSize: '0.875rem', border: 'none', cursor: 'pointer', fontWeight: 500 }}
@@ -42,6 +43,10 @@ export default function Home() {
         >
           Book an appointment
         </button>
+        <p style={{ marginTop: '1.25rem', fontSize: '0.85rem', color: '#aaa' }}>
+          Not sure what to get?{' '}
+          <a href="/style-quiz" style={{ color: '#0a0a0a', fontWeight: 500, textDecoration: 'none' }}>Take the style quiz →</a>
+        </p>
       </section>
 
       {/* ── WORK / GALLERY ── */}
@@ -201,7 +206,7 @@ export default function Home() {
 
       {/* ── FOOTER ── */}
       <footer style={{ borderTop: '1px solid #f0f0f0', padding: '2rem', textAlign: 'center' }}>
-  <p style={{ fontSize: '0.8rem', color: '#bbb' }}>&#169; 2023 The Chop Shop Barbers · Princeton & New Brunswick, New Jersey</p>
+  <p style={{ fontSize: '0.8rem', color: '#bbb' }}>&#169; 2023 Aarya Cuts · Princeton & New Brunswick, New Jersey</p>
   <a
     href="/admin/login"
     style={{ fontSize: '0.75rem', color: '#ddd', textDecoration: 'none', marginTop: '0.5rem', display: 'inline-block' }}

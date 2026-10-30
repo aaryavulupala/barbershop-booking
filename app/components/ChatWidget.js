@@ -6,7 +6,9 @@ import { useRouter } from 'next/navigation'
 const GREETING = "Hey! I can help with services, pricing, or picking a cut. What's up?"
 
 const SUGGESTIONS = [
+  'What services do you offer?',
   'What do you charge?',
+  'Where are you located?',
   'What cut suits me?',
   'How does booking work?',
 ]
@@ -88,8 +90,8 @@ export default function ChatWidget() {
   return (
     <>
       <style>{`
-        @keyframes chopshop-dot { 0%, 60%, 100% { opacity: 0.25; } 30% { opacity: 1; } }
-        @keyframes chopshop-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+        @keyframes aaryacuts-dot { 0%, 60%, 100% { opacity: 0.25; } 30% { opacity: 1; } }
+        @keyframes aaryacuts-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
       `}</style>
 
       {!open && (
@@ -131,13 +133,13 @@ export default function ChatWidget() {
             fontFamily: "'Inter', sans-serif",
             color: '#0a0a0a',
             zIndex: 1000,
-            animation: 'chopshop-in 0.18s ease-out',
+            animation: 'aaryacuts-in 0.18s ease-out',
           }}
         >
           {/* Header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 1.25rem', borderBottom: '1px solid #f0f0f0', flexShrink: 0 }}>
             <div>
-              <p style={{ fontWeight: 600, fontSize: '0.9rem', letterSpacing: '-0.01em' }}>The Chop Shop</p>
+              <p style={{ fontWeight: 600, fontSize: '0.9rem', letterSpacing: '-0.01em' }}>Aarya Cuts</p>
             </div>
             <button
               onClick={() => setOpen(false)}
@@ -185,7 +187,7 @@ export default function ChatWidget() {
                 {[0, 1, 2].map((d) => (
                   <span
                     key={d}
-                    style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#0a0a0a', animation: `chopshop-dot 1.2s infinite ${d * 0.18}s` }}
+                    style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#0a0a0a', animation: `aaryacuts-dot 1.2s infinite ${d * 0.18}s` }}
                   />
                 ))}
               </div>

@@ -6,17 +6,11 @@ import { useRouter } from 'next/navigation'
 
 export default function AdminDashboard() {
   const [bookings, setBookings] = useState([])
-  const [slots, setSlots] = useState([])
   const [loading, setLoading] = useState(true)
-  const [barberId, setBarberId] = useState(null)
-  const [activeTab, setActiveTab] = useState('bookings')
   const [editingBooking, setEditingBooking] = useState(null)
   const [editName, setEditName] = useState('')
   const [editEmail, setEditEmail] = useState('')
   const [editNotes, setEditNotes] = useState('')
-  const [date, setDate] = useState('')
-  const [time, setTime] = useState('')
-  const [addingSlot, setAddingSlot] = useState(false)
   const [deletingId, setDeletingId] = useState(null)
   const router = useRouter()
 
@@ -24,10 +18,7 @@ export default function AdminDashboard() {
     async function init() {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) { router.push('/admin/login'); return }
-      const { data: barbers } = await supabase.from('barbers').select('id').limit(1)
-      if (barbers?.length) setBarberId(barbers[0].id)
       await fetchBookings()
-      await fetchSlots()
     }
     init()
   }, [])
@@ -42,67 +33,12 @@ export default function AdminDashboard() {
     setLoading(false)
   }
 
-  async function fetchSlots() {
-    const { data, error } = await supabase
-      .from('time_slots')
-      .select('*')
-      .order('slot_date', { ascending: true })
-      .order('start_time', { ascending: true })
-    if (error) console.error(error)
-    else setSlots(data)
-  }
-
-  async function handleAddSlot() {
-    if (!date || !time || !barberId) return
-    setAddingSlot(true)
-    const { error } = await supabase.from('time_slots').insert({
-      barber_id: barberId,
-      slot_date: date,
-      start_time: time,
-      is_booked: false,
-    })
-    if (error) alert('Error adding slot')
-    else { setDate(''); setTime(''); await fetchSlots() }
-    setAddingSlot(false)
-  }
-
-  async function handleGenerateDay() {
-  if (!date || !barberId) return alert('Please select a date first')
-  setAddingSlot(true)
-
-  const times = []
-  for (let hour = 9; hour < 20; hour++) {
-    times.push(`${String(hour).padStart(2, '0')}:00`)
-    times.push(`${String(hour).padStart(2, '0')}:30`)
-  }
-
-  const slots = times.map((time) => ({
-    barber_id: barberId,
-    slot_date: date,
-    start_time: time,
-    is_booked: false,
-  }))
-
-  const { error } = await supabase.from('time_slots').insert(slots)
-  if (error) alert('Error generating slots — some may already exist for this date')
-  else { setDate(''); await fetchSlots(); alert('Full day generated!') }
-  setAddingSlot(false)
-}
-
-
-  async function handleDeleteSlot(id) {
-    if (!confirm('Delete this slot?')) return
-    await supabase.from('time_slots').delete().eq('id', id)
-    await fetchSlots()
-  }
-
   async function handleDeleteBooking(id, slotId) {
     if (!confirm('Delete this booking? This will also free up the time slot.')) return
     setDeletingId(id)
     await supabase.from('bookings').delete().eq('id', id)
     await supabase.from('time_slots').update({ is_booked: false }).eq('id', slotId)
     await fetchBookings()
-    await fetchSlots()
     setDeletingId(null)
   }
 
@@ -142,8 +78,6 @@ export default function AdminDashboard() {
 
   const upcomingBookings = bookings.filter(b => b.time_slots?.slot_date >= new Date().toISOString().split('T')[0])
   const pastBookings = bookings.filter(b => b.time_slots?.slot_date < new Date().toISOString().split('T')[0])
-  const availableSlots = slots.filter(s => !s.is_booked)
-  const bookedSlots = slots.filter(s => s.is_booked)
 
   if (loading) return <p style={{ padding: '2rem', fontFamily: 'sans-serif' }}>Loading...</p>
 
@@ -161,11 +95,10 @@ export default function AdminDashboard() {
       </nav>
 
       {/* Stats row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1px', background: '#e8e8e8', borderBottom: '1px solid #e8e8e8' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1px', background: '#e8e8e8', borderBottom: '1px solid #e8e8e8' }}>
         {[
           { label: 'Total bookings', value: bookings.length },
           { label: 'Upcoming', value: upcomingBookings.length },
-          { label: 'Available slots', value: availableSlots.length },
           { label: 'Past bookings', value: pastBookings.length },
         ].map((stat) => (
           <div key={stat.label} style={{ background: '#fff', padding: '1.5rem 2rem' }}>
@@ -177,21 +110,8 @@ export default function AdminDashboard() {
 
       <div style={{ maxWidth: '860px', margin: '0 auto', padding: '2.5rem 2rem' }}>
 
-        {/* Tabs */}
-        <div style={{ display: 'flex', gap: '0.25rem', marginBottom: '2rem', background: '#f0f0f0', borderRadius: '999px', padding: '0.25rem', width: 'fit-content' }}>
-          {['bookings', 'slots'].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              style={{ padding: '0.5rem 1.25rem', borderRadius: '999px', border: 'none', cursor: 'pointer', fontSize: '0.875rem', fontWeight: 500, background: activeTab === tab ? '#0a0a0a' : 'transparent', color: activeTab === tab ? '#fff' : '#666', transition: 'all 0.15s' }}
-            >
-              {tab === 'bookings' ? `Bookings (${bookings.length})` : `Slots (${slots.length})`}
-            </button>
-          ))}
-        </div>
-
         {/* BOOKINGS TAB */}
-        {activeTab === 'bookings' && (
+        {(
           <div>
             {upcomingBookings.length > 0 && (
               <div style={{ marginBottom: '3rem' }}>
@@ -266,67 +186,6 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* SLOTS TAB */}
-        {activeTab === 'slots' && (
-          <div>
-            <div style={{ background: '#fff', border: '1px solid #f0f0f0', borderRadius: '12px', padding: '1.5rem', marginBottom: '2rem' }}>
-              <h2 style={{ fontSize: '0.9rem', fontWeight: 500, marginBottom: '1.25rem' }}>Add a new slot</h2>
-              <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', color: '#555', marginBottom: '0.4rem' }}>Date</label>
-                  <input type="date" value={date} onChange={(e) => setDate(e.target.value)} style={{ padding: '0.75rem 1rem', border: '1px solid #e8e8e8', borderRadius: '8px', fontSize: '0.9rem', outline: 'none' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', color: '#555', marginBottom: '0.4rem' }}>Time</label>
-                  <input type="time" value={time} onChange={(e) => setTime(e.target.value)} style={{ padding: '0.75rem 1rem', border: '1px solid #e8e8e8', borderRadius: '8px', fontSize: '0.9rem', outline: 'none' }} />
-                </div>
-                <button onClick={handleAddSlot} disabled={addingSlot} style={{ background: '#fff', color: '#0a0a0a', padding: '0.75rem 1.5rem', borderRadius: '999px', fontSize: '0.875rem', fontWeight: 500, border: '1px solid #e8e8e8', cursor: 'pointer', opacity: addingSlot ? 0.6 : 1 }}>
-  {addingSlot ? 'Adding...' : 'Add single slot'}
-</button>
-<button onClick={handleGenerateDay} disabled={addingSlot} style={{ background: '#0a0a0a', color: '#fff', padding: '0.75rem 1.5rem', borderRadius: '999px', fontSize: '0.875rem', fontWeight: 500, border: 'none', cursor: 'pointer', opacity: addingSlot ? 0.6 : 1 }}>
-  {addingSlot ? 'Generating...' : 'Generate full day'}
-</button>
-              </div>
-            </div>
-
-            {availableSlots.length > 0 && (
-              <div style={{ marginBottom: '2rem' }}>
-                <h2 style={{ fontSize: '0.75rem', fontWeight: 500, color: '#aaa', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '1rem' }}>Available ({availableSlots.length})</h2>
-                <div style={{ background: '#fff', border: '1px solid #f0f0f0', borderRadius: '12px', overflow: 'hidden' }}>
-                  {availableSlots.map((s, i) => (
-                    <div key={s.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 1.5rem', borderBottom: i < availableSlots.length - 1 ? '1px solid #f0f0f0' : 'none' }}>
-                      <div>
-                        <p style={{ fontWeight: 500, fontSize: '0.9rem', marginBottom: '0.2rem' }}>{formatDate(s.slot_date)}</p>
-                        <p style={{ fontSize: '0.8rem', color: '#aaa' }}>{formatTime(s.start_time)}</p>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                        <span style={{ fontSize: '0.75rem', background: '#f0fdf4', color: '#16a34a', padding: '0.25rem 0.75rem', borderRadius: '999px', fontWeight: 500 }}>Available</span>
-                        <button onClick={() => handleDeleteSlot(s.id)} style={{ padding: '0.4rem 0.9rem', fontSize: '0.8rem', borderRadius: '999px', border: '1px solid #fee2e2', background: '#fff', color: '#e53e3e', cursor: 'pointer', fontWeight: 500 }}>Delete</button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {bookedSlots.length > 0 && (
-              <div>
-                <h2 style={{ fontSize: '0.75rem', fontWeight: 500, color: '#aaa', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '1rem' }}>Booked ({bookedSlots.length})</h2>
-                <div style={{ background: '#fff', border: '1px solid #f0f0f0', borderRadius: '12px', overflow: 'hidden' }}>
-                  {bookedSlots.map((s, i) => (
-                    <div key={s.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 1.5rem', borderBottom: i < bookedSlots.length - 1 ? '1px solid #f0f0f0' : 'none', opacity: 0.6 }}>
-                      <div>
-                        <p style={{ fontWeight: 500, fontSize: '0.9rem', marginBottom: '0.2rem' }}>{formatDate(s.slot_date)}</p>
-                        <p style={{ fontSize: '0.8rem', color: '#aaa' }}>{formatTime(s.start_time)}</p>
-                      </div>
-                      <span style={{ fontSize: '0.75rem', background: '#fef2f2', color: '#e53e3e', padding: '0.25rem 0.75rem', borderRadius: '999px', fontWeight: 500 }}>Booked</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
       </div>
 
       {/* Edit booking modal */}

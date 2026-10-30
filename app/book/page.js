@@ -34,7 +34,7 @@ export default function PickService() {
 
       {/* Nav */}
       <nav style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '1.25rem 2rem', borderBottom: '1px solid #f0f0f0' }}>
-        <span style={{ fontWeight: 600, fontSize: '1rem', letterSpacing: '-0.01em' }}>The Chop Shop</span>
+        <span style={{ fontWeight: 600, fontSize: '1rem', letterSpacing: '-0.01em' }}>Aarya Cuts</span>
       </nav>
 
       <div style={{ maxWidth: '580px', margin: '0 auto', padding: '3rem 2rem' }}>
